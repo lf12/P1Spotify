@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Spotify Streamer</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="fetch_task_test">Test Fetchtask</string>
+    <string name="search_hint_artists">Search Artists</string>
+    <string name="title_activity_top_songs">TopSongs</string>
+</resources>
