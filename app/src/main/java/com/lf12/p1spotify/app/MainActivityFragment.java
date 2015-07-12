@@ -34,6 +34,13 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.setRetainInstance(true);
+    }
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -56,8 +63,9 @@ public class MainActivityFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-
+                if (newText.length() > 0) {
                     (new FetchArtistsTask()).execute(newText);
+                }
 
                 return false;
             }
@@ -97,12 +105,18 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected ArrayList<myArtist> doInBackground(String... params) {
 
-            ArrayList<String> arrayArtists = new ArrayList<String>();
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String s: params){
+                stringBuilder.append(s);
+            }
+
+
+                    ArrayList<String> arrayArtists = new ArrayList<String>();
             ArrayList<myArtist> arrayListArtist = new ArrayList<myArtist>();
 
             SpotifyApi api = new SpotifyApi();
             SpotifyService spotifyService = api.getService();
-            ArtistsPager results = spotifyService.searchArtists(params[0]);
+            ArtistsPager results = spotifyService.searchArtists(stringBuilder.toString());
 
 
             // Print number of items

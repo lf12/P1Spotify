@@ -1,6 +1,5 @@
 package com.lf12.p1spotify.app;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -13,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +32,13 @@ public class TopSongsFragment extends Fragment {
 
     public TopSongsFragment() {
     }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.setRetainInstance(true);
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,11 +65,6 @@ public class TopSongsFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                /*String intentText = "intenttext";*/
-                Context context = getActivity().getBaseContext();
-                Toast foreToast = Toast.makeText(context, queryString, Toast.LENGTH_SHORT);
-                foreToast.show();
-
                 Intent previewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(songAdapter.getItem(position).preview_url));
                 startActivity(previewIntent);
 
