@@ -98,18 +98,13 @@ public class TopSongsFragment extends Fragment {
 
             ArrayList<Song> arrayListSongs = new ArrayList<Song>();
 
-            SpotifyApi api = new SpotifyApi();
-            SpotifyService spotifyService = api.getService();
-            HashMap<String, Object> queryTopTracks = new HashMap<>();
-            queryTopTracks.put(SpotifyService.COUNTRY, Locale.getDefault().getCountry());
+            try {
+                SpotifyApi api = new SpotifyApi();
+                SpotifyService spotifyService = api.getService();
+                HashMap<String, Object> queryTopTracks = new HashMap<>();
+                queryTopTracks.put(SpotifyService.COUNTRY, Locale.getDefault().getCountry());
 
-            Tracks results = spotifyService.getArtistTopTrack(queryString, queryTopTracks);
-
-
-            // Print number of items
-            // Log.d(LOG_TAG, "Number of items" + (results.artists.items.size()));
-            // Name of The first myArtist
-            //   Log.d(LOG_TAG, "Number of items" + (results.artists.items.size()));
+                Tracks results = spotifyService.getArtistTopTrack(queryString, queryTopTracks);
 
             String thumbImg = "";
             int thumbCount = 0;
@@ -137,6 +132,10 @@ public class TopSongsFragment extends Fragment {
                 Log.d(LOG_TAG, "Album Name " + i + " " + (results.tracks.get(i).album.name));
                 Log.d(LOG_TAG, "SpotifyID, item " + i + " " + (results.tracks.get(i)).id);
                 }
+
+            } catch (Exception e){
+                Log.e(LOG_TAG, "Error fetching TopSongs ", e);
+            }
 
             return arrayListSongs;
         }

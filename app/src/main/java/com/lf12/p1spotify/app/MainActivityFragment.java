@@ -114,9 +114,11 @@ public class MainActivityFragment extends Fragment {
                     ArrayList<String> arrayArtists = new ArrayList<String>();
             ArrayList<myArtist> arrayListArtist = new ArrayList<myArtist>();
 
-            SpotifyApi api = new SpotifyApi();
-            SpotifyService spotifyService = api.getService();
-            ArtistsPager results = spotifyService.searchArtists(stringBuilder.toString());
+            try {
+
+                SpotifyApi api = new SpotifyApi();
+                SpotifyService spotifyService = api.getService();
+                ArtistsPager results = spotifyService.searchArtists(stringBuilder.toString());
 
 
             // Print number of items
@@ -147,6 +149,10 @@ public class MainActivityFragment extends Fragment {
                 Log.d(LOG_TAG, "Artists, item " + i + " " + (results.artists.items.get(i)).name);
                 Log.d(LOG_TAG, "Followers, item " + i + " " + (results.artists.items.get(i)).followers.total);
                 Log.d(LOG_TAG, "SpotifyID, item " + i + " " + (results.artists.items.get(i)).id);
+            }
+
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Error fetching Artists ", e);
             }
 
             return arrayListArtist;
