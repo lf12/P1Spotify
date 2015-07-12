@@ -1,6 +1,5 @@
 package com.lf12.p1spotify.app;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,6 +25,8 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
  */
 public class MainActivityFragment extends Fragment {
 
+    SearchView search;
+
     // ou ArrayAdapter<myArtist>??
     private ArtistAdapter artistsAdapter;
 
@@ -37,11 +39,29 @@ public class MainActivityFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+        search = (SearchView) rootView.findViewById(R.id.searchViewArtists);
+            search.setQueryHint("Search Artists");
+
         artistsAdapter = new ArtistAdapter(
                 getActivity(),
                 R.layout.list_artists,
                 new ArrayList<myArtist>()
         );
+
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                    (new FetchArtistsTask()).execute(newText);
+
+                return false;
+            }
+        });
 
         ListView listView = (ListView) rootView.findViewById(R.id.listView_artists);
         listView.setAdapter(artistsAdapter);
@@ -49,12 +69,9 @@ public class MainActivityFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String intentText = artistsAdapter.getItem(position).id;
-                Context context = getActivity().getBaseContext();
-                Toast foreToast = Toast.makeText(context, intentText, Toast.LENGTH_SHORT);
-                foreToast.show();
+                String artistID = artistsAdapter.getItem(position).id;
 
-                Intent detailIntent = new Intent(getActivity(), TopSongs.class).putExtra(Intent.EXTRA_TEXT, intentText);
+                Intent detailIntent = new Intent(getActivity(), TopSongs.class).putExtra(Intent.EXTRA_TEXT, artistID);
                 startActivity(detailIntent);
             }
         });
@@ -66,19 +83,12 @@ public class MainActivityFragment extends Fragment {
 
     // TODO: Implement Search Bar
 
-    protected void updateArtists(){
-        FetchArtistsTask fetchArtistsTask = new FetchArtistsTask();
-        fetchArtistsTask.execute();
-    }
-
 
     @Override
     public void onStart(){
         super.onStart();
-        updateArtists();
     }
 
-    // TODO: Make Toast if Connection is not Available?
     // TODO: Make Toast if Search not found
     public class FetchArtistsTask extends AsyncTask<String, Void, ArrayList<myArtist>> {
 
@@ -92,7 +102,7 @@ public class MainActivityFragment extends Fragment {
 
             SpotifyApi api = new SpotifyApi();
             SpotifyService spotifyService = api.getService();
-            ArtistsPager results = spotifyService.searchArtists("John");
+            ArtistsPager results = spotifyService.searchArtists(params[0]);
 
 
             // Print number of items
@@ -123,7 +133,6 @@ public class MainActivityFragment extends Fragment {
                 Log.d(LOG_TAG, "Artists, item " + i + " " + (results.artists.items.get(i)).name);
                 Log.d(LOG_TAG, "Followers, item " + i + " " + (results.artists.items.get(i)).followers.total);
                 Log.d(LOG_TAG, "SpotifyID, item " + i + " " + (results.artists.items.get(i)).id);
-                //Log.d(LOG_TAG, "UrlThumb, item " + i + " " + (((((results.artists.items).get(1)).images).get(0)).url.toString()));
             }
 
             return arrayListArtist;
@@ -131,7 +140,11 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(ArrayList<myArtist> result) {
-            if (result != null){
+            if (result == null || result.isEmpty()){
+                artistsAdapter.clear();
+                Toast toaster = Toast.makeText(getActivity().getBaseContext(), "No Artists found. Please refine search.", Toast.LENGTH_SHORT);
+                toaster.show();
+            } else {
                 artistsAdapter.clear();
                 for (myArtist song : result) {
                     artistsAdapter.add(song);
