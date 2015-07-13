@@ -1,6 +1,7 @@
 package com.lf12.p1spotify.app;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,10 +10,23 @@ import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity {
 
+
+    private static final String TAG_TASK_ARTISTFRAGMENT = "artist_fragment";
+
+    private MainActivityFragment artistFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        FragmentManager fm = getSupportFragmentManager();
+        artistFragment = (MainActivityFragment) fm.findFragmentByTag(TAG_TASK_ARTISTFRAGMENT);
+
+        if (artistFragment == null){
+            artistFragment = new MainActivityFragment();
+            fm.beginTransaction().add(artistFragment, TAG_TASK_ARTISTFRAGMENT).commit();
+        }
 
     }
 
